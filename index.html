@@ -141,19 +141,19 @@
 		
 		function getSingleItem(id){
 			 return   promise.get(
-						"http://api.huuto.net/1.1/items/"+id+"?timestamp="+new Date().getTime());}
+						"//api.huuto.net/1.1/items/"+id+"?timestamp="+new Date().getTime());}
 				
 
 		function getCategoryItems(category){
 			return promise.get(
-						"http://api.huuto.net/1.1/categories/"+category+"/items?sort=closing&timestamp="+new Date().getTime());}
+						"//api.huuto.net/1.1/categories/"+category+"/items?sort=closing&timestamp="+new Date().getTime());}
 		
 		function getItemsBySearchTerm(terms){
 			var encodedTerms = 
 						terms
 							.map(function(term){return encodeURIComponent(term)})
 			return promise.get(
-						"http://api.huuto.net/1.1/items?sort=closing&words="+encodedTerms.join("+")+"&timestamp="+new Date().getTime());}
+						"//api.huuto.net/1.1/items?sort=closing&words="+encodedTerms.join("+")+"&timestamp="+new Date().getTime());}
 
 		
 		function handleReceivedItems(error,data){
