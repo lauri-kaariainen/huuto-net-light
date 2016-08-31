@@ -1,0 +1,22 @@
+@media (max-width: 475px) {
+	.huuto__main-content{
+		padding:3px;
+	}
+	
+    .col > img {
+		width:90%;
+	}
+	.col > p {
+		font-size: 2.9vw;
+	}
+	.huuto__main-content__items__itemInItemlistLink__imgDiv{
+		width:35%;
+	}
+	.huuto__common-button {
+		width:80%;
+		margin-bottom: 5px;
+	}
+	.huuto__main-content__add-new-search-term-button{
+		width:40px;
+	}
+}

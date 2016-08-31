@@ -1,0 +1,106 @@
+.padding-top-20px{
+	padding-top:20px;
+}
+
+
+body {
+		background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzg0YmJmMyI+PC9yZWN0Pgo8Y2lyY2xlIHI9IjkuMiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiNmZmYiIGZpbGw9Im5vbmUiPjwvY2lyY2xlPgo8Y2lyY2xlIGN5PSIxOC40IiByPSI5LjIiIHN0cm9rZS13aWR0aD0iMXB4IiBzdHJva2U9IiNmZmYiIGZpbGw9Im5vbmUiPjwvY2lyY2xlPgo8Y2lyY2xlIGN4PSIxOC40IiBjeT0iMTguNCIgcj0iOS4yIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZT0iI2ZmZiIgZmlsbD0ibm9uZSI+PC9jaXJjbGU+Cjwvc3ZnPg==");
+}
+
+.huuto__main-content{
+	 font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+	max-width:700px;
+	margin-left:auto;
+	margin-right:auto;
+	text-align:center;
+	background: white;
+	padding: 40px;
+	border-radius: 2px;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.huuto__common-button{
+	min-width: 120px;
+	height: 32px;
+	line-height: 32px;
+	#border-radius: 2px;
+	border:none;
+	font-size: 0.9em;
+	background-color: #4285f4;
+	color: #fff;
+	margin-bottom: 5px;
+	transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	transition-delay: 0.2s;
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+.findSearchTermsButtonMain{
+	background-color:#84bbf3;
+	overflow:hidden;
+}
+.findSearchTermsButtonDelete{
+	background-color: gainsboro;
+	color: gray;
+	width:10%;
+}
+.huuto__main-content__search-button:active,
+.huuto__common-button:active {
+      box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+      transition-delay: 0s;
+    }
+
+.huuto__main-content__search-button {
+	min-width: 120px;
+	border:none;
+      height: 32px;
+      line-height: 32px;
+      #border-radius: 2px;
+      font-size: 0.9em;
+      background-color: #fff;
+      color: #646464;
+	  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition-delay: 0.2s;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+.huuto__main-content__search-button-div{
+	width:150px;
+	display:inline-block;
+	background-color: transparent;
+	
+	
+}
+
+
+.huuto__main-content__search-input{
+	font-size:1.1em;
+}
+.huuto__main-content__add-new-search-term-button{
+	display:inline-block;
+	border-radius: 22px;
+	font-size: 3em;
+	min-width: 0px;
+	width: 40px;
+	background-color: #84bbf3;
+	height: 40px;
+}
+
+.huuto__main-content__items{
+	margin-top: 50px;
+	text-align:left;
+}
+
+.huuto__main-content__items__itemInItemlistLink{
+	display:block;
+	text-decoration:none;
+	padding: 6px;
+	color: #666666;
+}
+.huuto__main-content__items__itemInItemlistLink >img{
+	padding-right:10px;
+	padding-bottom:10px;
+}
+.huuto__main-content__items__itemInItemlistLink__imgDiv{
+	width:160px;
+}
+.huuto__main-content__items__itemInItemlistLink__textDiv{
+	vertical-align:top;
+}

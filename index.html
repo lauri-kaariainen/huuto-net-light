@@ -1,0 +1,247 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Huuto.net mobilely</title>
+	<link rel="stylesheet" href="ungrid.css">
+	<link rel="stylesheet" href="iosCheckBox.css">
+	<link rel="stylesheet" href="huuto.css">
+	<link rel="stylesheet" href="huuto-media-475px.css">
+	
+	
+</head>
+<body>
+	<div class="huuto__main-content">
+		<div class="huuto__main-content__category-buttons__wrapper" style="width:100%">
+			<div class="row">
+				<div class="col huuto__main-content__category-buttons-div">
+					<button id="findTelevisions" title="Hae kategorian mukaan" class="huuto__common-button  findCategoryButton" value="843">TAULUTELEVISIOT</button> 
+					<button id="findLaptops" title="Hae kategorian mukaan" class="huuto__common-button findCategoryButton" value="84" >LÄPPÄRIT</button> 
+					<button id="findPads" title="Hae kategorian mukaan" class="huuto__common-button findCategoryButton" value="1078" >PÄDIT</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col huuto__main-content__category-buttons__searchterms-div padding-top-20px">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+				<label>
+					<input type="checkbox" value="1" id="sortByPrice" class="ios-switch" >
+					<div class="switch" data-content=""></div>
+						Järjestä hinnan mukaan
+				</label>
+				</div> <!-- col -->
+			</div> <!-- row-->
+		</div>
+		<br/>
+		<div  title="Tallenna hauksi (ei se koiran ääni)" class="huuto__common-button huuto__main-content__add-new-search-term-button">+</div>
+		<input class="huuto__main-content__search-input" placeholder="Hae hakusanalla" size=16>
+
+		
+		
+			<button class="huuto__main-content__search-button"  >HAE</button>
+		</input>
+		
+		<div class="huuto__main-content__items">
+		</div>
+	</div><!-- main content -->
+	
+    <script src="promise.min.js"></script>
+	<!-- this script to shim safari/ie problems with non-conformant ISO 8601 date which is what huuto.net API gives out //082016 -->
+	<script src="iso8601.min.js"></script>
+    
+	
+
+	<script>	
+	"use strict";
+   function start(){
+		
+	//STATE
+		window.HUUTOGLOBALSTATE = {};
+		window.HUUTOGLOBALSTATE.getOldItemList = function(){
+				return JSON.parse(window.localStorage.getItem("huuto__itemlist") || "[]");
+		};
+		window.HUUTOGLOBALSTATE.persistItemList = function(list){
+				window.localStorage.setItem("huuto__itemlist",JSON.stringify(list));
+				return list;
+		}
+		window.HUUTOGLOBALSTATE.getOldFavoriteList = function(){
+				return JSON.parse(window.localStorage.getItem("huuto__favoritelist") || "[]");
+		};
+		window.HUUTOGLOBALSTATE.persistFavoriteList = function(list){
+				window.localStorage.setItem("huuto__favoritelist",JSON.stringify(list));
+				return list;
+		}
+		window.HUUTOGLOBALSTATE.removeFavorite = function(favoriteToBeRemoved){
+			window.HUUTOGLOBALSTATE.persistFavoriteList(
+				window.HUUTOGLOBALSTATE.getOldFavoriteList()
+					.filter(function(oldFav){return oldFav !== favoriteToBeRemoved;}))
+		};
+	//FUNCTIONS
+		
+		var  mapToHTML = function(elem) {
+			if(elem.images.length === 0)
+				elem.img = "//www.huuto.net/module/fresco/images/eikuvaa_140.png";
+			else
+				elem.img = elem.images[0].links.thumbnail;
+			//remember to use the Date.parse(...) so that the ISO8601(non-conforming) shim works!
+			var timeleft = elem.date !== null ? Math.floor((new Date(Date.parse(elem.closingTime)) - new Date())/1000/60) + " mins " : "";
+			
+			return   "<a class='huuto__main-content__items__itemInItemlistLink' href='//www.huuto.net/kohteet/"+ 
+								elem.id +"'>" +
+								"<div class='row'>"+
+									"<div class='col huuto__main-content__items__itemInItemlistLink__imgDiv' >"+
+										"<img src='" + 
+										elem.img + " ' style='display:inline;'/>" +
+									'</div>'+
+									"<div class='col huuto__main-content__items__itemInItemlistLink__textDiv' >"+
+										'<p>'+
+											timeleft+'<br/>'+
+											elem.title + "<br/>" + 
+											"location: <span style=''>"+elem.location +"</span><br/>"+		
+											"curr price: <span style='color:black;font-weight:1.2;'>"+elem.currentPrice +" e</span><br/>"+
+											"buy now price: <span style='color:red;font-weight:1.2;'>"+elem.buyNowPrice +" e</span><br/>"+
+										'</p>'+
+									"</div>"+//col
+								"</div>"+//row
+							"</a>";
+		}
+		var createFavoriteButtonHTMLElem= function(terms){
+			var newButtonWrap = document.createElement('div');
+			newButtonWrap.className = "huuto__common-button huuto__main-content__search-button-div";
+			var newButtonRow = document.createElement('div');
+			newButtonRow.className="row";
+			var newButtonMain = document.createElement('div');
+			
+			newButtonMain.className = "col findSearchTermsButtonMain";
+			newButtonMain.value = terms;
+			newButtonMain.innerHTML = terms.toUpperCase();
+			newButtonMain.title =  "Hae tällä hakusanalla";
+			newButtonMain.onclick =  function(e){		
+				getItemsBySearchTerm(terms.split(' '))
+					.then(handleReceivedItems);
+			}
+			var newButtonDeleteSide = document.createElement('div');
+			newButtonDeleteSide.className = "col findSearchTermsButtonDelete";
+			newButtonDeleteSide.title = "Poista";
+			newButtonDeleteSide.value = terms;
+			newButtonDeleteSide.innerHTML = "X";
+			newButtonDeleteSide.onclick = function(e){
+				this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
+				window.HUUTOGLOBALSTATE.removeFavorite(terms);
+			};
+			
+			newButtonRow.appendChild(newButtonMain);
+			newButtonRow.appendChild(newButtonDeleteSide);
+			newButtonWrap.appendChild(newButtonRow);
+			return newButtonWrap;
+		}
+		
+		function getSingleItem(id){
+			 return   promise.get(
+						"http://api.huuto.net/1.1/items/"+id+"?timestamp="+new Date().getTime());}
+				
+
+		function getCategoryItems(category){
+			return promise.get(
+						"http://api.huuto.net/1.1/categories/"+category+"/items?sort=closing&timestamp="+new Date().getTime());}
+		
+		function getItemsBySearchTerm(terms){
+			var encodedTerms = 
+						terms
+							.map(function(term){return encodeURIComponent(term)})
+			return promise.get(
+						"http://api.huuto.net/1.1/items?sort=closing&words="+encodedTerms.join("+")+"&timestamp="+new Date().getTime());}
+
+		
+		function handleReceivedItems(error,data){
+			var data = JSON.parse(data);
+			window.HUUTOGLOBALSTATE.persistItemList(data.items);
+			console.log(data.items[0]);
+			var data = window.HUUTOGLOBALSTATE.getOldItemList();
+			var htmlItems = data
+					.map(mapToHTML);
+			document.querySelector('.huuto__main-content__items').innerHTML = htmlItems.join('<br/>');
+
+		}
+	
+			
+	//BINDINGS
+		var SEARCHBUTTON = document.querySelector(".huuto__main-content__search-button");
+		var SEARCHINPUT = document.querySelector(".huuto__main-content__search-input");
+		var FINDCATEGORYBUTTONS = document.querySelectorAll(".findCategoryButton");
+		var SORTBYPRICE = document.querySelector("#sortByPrice");
+		var ADDFAVORITESEARCHTERMBUTTON  = document.querySelector(".huuto__main-content__add-new-search-term-button");
+		var CATEGORYBUTTONSDIV = document.querySelector(".huuto__main-content__category-buttons__searchterms-div");
+		
+		SEARCHBUTTON.onclick = function(){
+			var terms= SEARCHINPUT.value;
+			getItemsBySearchTerm(terms.split(' '))
+				.then(handleReceivedItems);
+		}
+		SEARCHINPUT.onkeyup = function(e){
+			if(e.keyCode === 13)
+				SEARCHBUTTON.click();
+			
+		}
+
+		for(var i = 0; i < FINDCATEGORYBUTTONS.length;i++){
+			FINDCATEGORYBUTTONS[i].onclick = function(){
+				var category = this.value;
+				getCategoryItems(category)
+					.then(handleReceivedItems);		
+				}
+		}
+		var OLDITEMS = window.HUUTOGLOBALSTATE.getOldItemList();
+		if(OLDITEMS.length){
+			handleReceivedItems(null,JSON.stringify({"items":OLDITEMS}));
+		}
+		var OLDFAVORITES = window.HUUTOGLOBALSTATE.getOldFavoriteList();
+		if(OLDFAVORITES.length){
+			OLDFAVORITES
+				.forEach(function(term){
+					CATEGORYBUTTONSDIV.appendChild(createFavoriteButtonHTMLElem(term));
+					//the "\n" in the end is needed to make html elements stack properly (inside table?), otherwise it results in a bug in layout
+					CATEGORYBUTTONSDIV.appendChild(document.createTextNode("\n"));});
+		}
+		SORTBYPRICE.onclick = function(){
+			var checked = this.checked;
+			handleReceivedItems(null,JSON.stringify({"items":window.HUUTOGLOBALSTATE.getOldItemList().sort(function(a,b){return byPrice(a,b,checked);})}));
+		
+			function byPrice(a,b,inverse){
+				var factor = inverse? -1:1;
+				return  factor*(b.currentPrice - a.currentPrice);
+					
+			 }
+		}
+		
+		ADDFAVORITESEARCHTERMBUTTON.onclick = function(){
+			var terms= SEARCHINPUT.value;
+			//fail
+			if(terms.length < 1) return;
+			
+			var oldFavorites = window.HUUTOGLOBALSTATE.getOldFavoriteList();
+			var wasItAlreadyInFavorites = oldFavorites
+																			.filter(function(fav){return fav === terms})
+																			.length;
+			if(wasItAlreadyInFavorites) {
+				alert("Tämä oli jo tallennettu!");
+				return;
+			}
+			var newFavorites = oldFavorites.concat(terms);
+			window.HUUTOGLOBALSTATE.persistFavoriteList(newFavorites);
+			
+			CATEGORYBUTTONSDIV.appendChild(createFavoriteButtonHTMLElem(terms));
+			//the "\n" in the end is needed to make html elements stack properly (inside table?), otherwise it results in a bug in layout
+			CATEGORYBUTTONSDIV.appendChild(document.createTextNode("\n"));
+		}
+	};
+	
+	
+	start();
+
+	</script>
+</body>
+</html>
